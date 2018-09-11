@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Layout SDM</string>
+    <string-array name="tipoTelefone">
+        <item>Fixo</item>
+        <item>Celular</item>
+    </string-array>
+</resources>
