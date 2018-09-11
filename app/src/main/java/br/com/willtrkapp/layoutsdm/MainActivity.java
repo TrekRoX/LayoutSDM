@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     private final String ESTADO_NOTIFICAO_CHECKBOX = "ESTADO_NOTIFICAO_CHECKBOX";
     private final String NOTIFICACAO_RADIO_BUTTON_SELECIONADO = "NOTIFICACAO_RADIO_BUTTON_SELECIONADO";
     private final String KEY_LST_VIEW_TELEFONES = "KEY_LST_VIEW_TELEFONES";
+    private final String KEY_LST_VIEW_EMAIL = "KEY_LST_VIEW_EMAIL";
     private EditText nomeEditTex;
     private EditText emailEditTex;
     //private EditText telefoneEditTex;
@@ -26,7 +27,10 @@ public class MainActivity extends AppCompatActivity {
     private RadioGroup notificacoesRadioGroup;
 
     private LinearLayout telefoneLinearLayout;
+    private LinearLayout emailLinearLayout;
     private ArrayList<View> telefoneArraylist;
+    private ArrayList<View> emailArrayList;
+
 
 
 
@@ -38,11 +42,13 @@ public class MainActivity extends AppCompatActivity {
         notificacoesCheckbox = findViewById(R.id.notificacoesCheckBox);
         notificacoesRadioGroup = findViewById(R.id.notificacoesRadioGroup);
         nomeEditTex = findViewById(R.id.nomeEditText);
-        emailEditTex = findViewById(R.id.emailEditText);
+        //emailEditTex = findViewById(R.id.emailEditText);
         //telefoneEditTex = findViewById(R.id.telefoneEditText);
 
         telefoneLinearLayout = findViewById(R.id.telefoneLinearLayout);
+        emailLinearLayout = findViewById(R.id.emailLinearLayout);
         telefoneArraylist = new ArrayList<>();
+        emailArrayList = new ArrayList<>();
 
         //Tratando evento de check no checkbox
 
@@ -83,6 +89,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void adicionarEmail(View view){
+        if(view.getId() == R.id.adicionarEmailButton){
+            LayoutInflater layoutInflater = getLayoutInflater();
+            View novoEmailLayout = layoutInflater.inflate(R.layout.novoemaillayout, null, false);
+            emailArrayList.add(novoEmailLayout);
+            emailLinearLayout.addView(novoEmailLayout);
+        }
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -91,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
         outState.putBoolean(ESTADO_NOTIFICAO_CHECKBOX, notificacoesCheckbox.isChecked());
         outState.putInt(NOTIFICACAO_RADIO_BUTTON_SELECIONADO, notificacoesRadioGroup.getCheckedRadioButtonId());
         outState.putSerializable(KEY_LST_VIEW_TELEFONES, telefoneArraylist);
+        outState.putSerializable(KEY_LST_VIEW_EMAIL, emailArrayList);
 
     }
 
@@ -128,6 +144,32 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
+
+            if(savedInstanceState.getSerializable(KEY_LST_VIEW_EMAIL) != null)
+            {
+                emailArrayList = (ArrayList<View>) savedInstanceState.getSerializable(KEY_LST_VIEW_EMAIL);
+                for(int i = 0; i < emailArrayList.size(); i++)
+                {
+                    if(emailArrayList.get(i) != null)
+                    {
+                        try
+                        {
+                            View holderLayout = emailArrayList.get(i);
+                            if(holderLayout.getParent()!=null)
+                                ((LinearLayout)holderLayout.getParent()).removeView(holderLayout); // <- fix
+
+                            emailLinearLayout.addView(emailArrayList.get(i));
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.v("MYLOG", "Erro: " + ex.getMessage());
+                            break;
+                        }
+                    }
+                }
+            }
+
+
         }
     }
 
@@ -135,13 +177,21 @@ public class MainActivity extends AppCompatActivity {
         notificacoesCheckbox.setChecked(false);
         notificacoesRadioGroup.clearCheck();
         nomeEditTex.setText("");
-        emailEditTex.setText("");
+        //emailEditTex.setText("");
         nomeEditTex.requestFocus();
         for(int i = 0; i < telefoneArraylist.size(); i++)  {
             ((EditText)telefoneArraylist.get(i).findViewById(R.id.telefoneEditText)).setText("");
             ((Spinner)telefoneArraylist.get(i).findViewById(R.id.tipoTelefoneSpinner)).setSelection(0);
         }
+
+        for(int i = 0; i < emailArrayList.size(); i++)  {
+            ((EditText)emailArrayList.get(i).findViewById(R.id.emailEditText)).setText("");
+        }
+
         telefoneArraylist.clear();
         telefoneLinearLayout.removeAllViews();
+
+        emailArrayList.clear();
+        emailLinearLayout.removeAllViews();
     }
 }
